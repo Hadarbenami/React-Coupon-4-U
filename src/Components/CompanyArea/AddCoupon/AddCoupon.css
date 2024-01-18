@@ -1,0 +1,13 @@
+
+
+.AddCoupon{
+    text-align: center;
+}
+
+.AddCoupon .error {
+	
+    color: rgb(184, 6, 6);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    
+    
+}

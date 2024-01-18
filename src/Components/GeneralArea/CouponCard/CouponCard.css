@@ -1,0 +1,22 @@
+
+.CouponCard {
+    position: relative; 
+    margin: 10px; 
+    max-width: 200px;
+    
+  }
+  
+img{
+    width: 50%;
+}
+
+.price-circle {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: #469e07; 
+    color: #fff; 
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 20px;
+  }

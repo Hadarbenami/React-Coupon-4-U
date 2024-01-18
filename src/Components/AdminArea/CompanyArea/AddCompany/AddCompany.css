@@ -1,0 +1,18 @@
+.AddCompany .error {
+	
+    color: rgb(184, 6, 6);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    
+}
+
+.AddCompany{
+    text-align: center;
+}
+
+ 
+
+#head{
+    font-size: small;
+    text-align: left;
+}
+

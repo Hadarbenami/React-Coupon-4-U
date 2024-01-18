@@ -1,0 +1,22 @@
+ .Layout {
+	display: grid;
+    grid-template-rows: 14% 80% 6%;
+    height: 100%;
+}
+
+ /* .Layout>footer{
+    grid-column: span 2;
+}  */
+
+
+
+
+.Toastify__toast-theme--light.Toastify__toast--success{
+    background-color: green;
+    color: black;
+}
+
+.Toastify__toast-theme--light.Toastify__toast--error{
+    background-color: red;
+    color: black;
+} 

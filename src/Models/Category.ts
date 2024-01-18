@@ -1,0 +1,4 @@
+export enum Category{
+    FOOD, CLOTHING, ELECTRONICS , JEWELRY, MAKEUP, CARE
+}
+

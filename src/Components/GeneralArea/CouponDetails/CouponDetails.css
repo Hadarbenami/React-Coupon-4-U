@@ -1,0 +1,96 @@
+
+.CouponDetails {
+    display: flex;
+    height: 100%; /* Set a height for the container */
+    display: flex;
+    
+  }
+  
+   .image-container {
+    flex: 1;
+    width: 100%;
+  
+  }
+
+  .image-container >img {
+   width: 100%;
+   height: 100%;
+
+   border: solid 1px gray;
+
+  }
+  
+  .details-container {
+    flex: 2;
+
+     /* Add padding to the details container */
+    /* Adjust the width of the details container as needed */
+  } */
+
+  .CouponDetails {
+    display: flex;
+    height: 100vh; /* Set a height for the container, using viewport height */
+  }
+  
+  .container {
+    flex: 1;
+    display: flex;
+  }
+  
+  .image-container {
+    flex: 1;
+    width: 50%; /* Adjust the width of the image container as needed */
+    box-sizing: border-box; /* Consider border and padding in the width */
+  }
+  
+  .image-container > img {
+    width: 100%;
+    height: 100%;
+    margin-left: 20px;
+    object-fit: cover;
+    border: solid 1px gray;
+  }
+  
+  .details-container {
+    flex: 1;
+    position: relative; 
+    margin-left: 150px;
+    width: 50%; /* Adjust the width of the details container as needed */
+    box-sizing: border-box; /* Consider border and padding in the width */
+    padding: 20px; /* Add padding to the details container */
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }
+
+  #des{
+    border: solid 2px gray;
+    padding: 15px;
+    position: absolute;
+    margin-right: 15px;
+  }
+
+  .details-container  h1{
+    font-family:fantasy;
+    font-weight: 200;
+    color: #000080;
+  }
+
+  .details-container p{
+    color: rgb(82, 81, 81);
+    
+  }
+
+  .priceCircleD {
+    position: absolute;
+    /* margin-top: 10px;
+    margin-left: 140px; */
+    right: 10px;
+    top: 10px;
+    margin: 20px;
+    background-color: #469e07;
+    color: #fff; 
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 20px;
+  }
+
+

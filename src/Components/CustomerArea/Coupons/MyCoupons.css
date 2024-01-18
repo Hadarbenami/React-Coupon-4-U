@@ -1,0 +1,18 @@
+.MyCoupons {
+	display: grid;
+  grid-template-columns: 15% 85%;
+  height: 100%;
+}
+
+.MyCoupons .Container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.MyCoupons .sort{
+    margin: 10px;
+    color: #671f67;
+    font-weight: 600;
+    height: 100%;
+    
+  }

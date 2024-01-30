@@ -16,8 +16,9 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import AuthMenu from "../../AuthArea/AuthMenu/AuthMenu";
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore } from "../../../Redux/OurStore";
 import { useNavigate } from "react-router-dom";
+
 
 function Navbar(): JSX.Element {
     const pages = [''];
@@ -108,7 +109,7 @@ function Navbar(): JSX.Element {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          {/* <img src="/images/couponsIcon.png" alt="Coupons Icon" style={{ display: 'flex', marginRight: 1 }}/> */}
           <Typography
             variant="h5"
             noWrap
@@ -139,7 +140,7 @@ function Navbar(): JSX.Element {
             ))}
           </Box>
 
-          {authStore.getState().auth.user?.role == 'customer' && <Box sx={{flexGrow: 0, marginRight: '80px'}}>
+          {authStore.getState().user?.role == 'customer' && <Box sx={{flexGrow: 0, marginRight: '80px'}}>
           <IconButton onClick={() => navigate("/customer/getMyCoupons")}>
             <ShoppingCartCheckoutIcon style={{ fontSize: 25, color: 'white' }}/>
           </IconButton>
@@ -152,9 +153,9 @@ function Navbar(): JSX.Element {
         
           <Box sx={{ flexGrow: 0 }}>
               <IconButton sx={{ p: 0 }}>
-                {authStore.getState().auth.user?.role == 'company' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>{authStore.getState().auth.user.name}</Avatar>}
-                {authStore.getState().auth.user?.role == 'admin' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>Admin</Avatar>}
-                {authStore.getState().auth.user?.role == 'customer' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>{authStore.getState().auth.user.firstName}</Avatar>}
+                {authStore.getState().user?.role == 'company' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>{authStore.getState().user.name}</Avatar>}
+                {authStore.getState().user?.role == 'admin' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>Admin</Avatar>}
+                {authStore.getState().user?.role == 'customer' && <Avatar sx={{ fontSize: "small",bgcolor: "purple"}}>{authStore.getState().user.firstName}</Avatar>}
               </IconButton>
             <Menu
               sx={{ mt: '45px' }}

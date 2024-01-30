@@ -3,7 +3,7 @@ import Coupon from "../../../Models/Coupon";
 import "./CompanyCoupons.css";
 import companyService from "../../../Services/CompanyService";
 import errorHandler from "../../../Services/ErrorHandler";
-import { couponStore } from "../../../Redux/OurStore";
+import { authStore, couponStore } from "../../../Redux/OurStore";
 import CouponCard from "../../GeneralArea/CouponCard/CouponCard";
 import { NavLink } from "react-router-dom";
 import { Button, FormControlLabel, Grid, Radio, RadioGroup, Slider, Typography } from "@mui/material";
@@ -11,13 +11,34 @@ import { Category } from "../../../Models/Category";
 
 function CompanyCoupons(): JSX.Element {
     const[coupons, setCoupons] = useState<Coupon[]>([]);
+    const [initialCoupons, setInitialCoupons] = useState<Coupon[]>([]); 
     const options = ['Food', 'Clothing', 'Electronics', 'Jewelry', 'Makeup', 'Care'];
 
+
     useEffect(() => {
-        companyService.getCompanyCoupons()
-            .then(coup => setCoupons(coup)) // success
-            .catch(err =>errorHandler.showError(err)) // error
-    },[]);
+      fetchCoupons(); 
+      
+      const unsubscribe = couponStore.subscribe(() => {
+        if (authStore.getState().user !== null) {
+          fetchCoupons();
+        }
+      });
+      return ()=>{
+        unsubscribe();
+      }
+    }, []);
+    
+    const fetchCoupons = () => {
+      companyService.getCompanyCoupons()
+      .then(coup => {
+        setCoupons(coup);
+        setInitialCoupons(coup); 
+      })
+      .catch(err =>errorHandler.showError(err))
+    };
+
+  
+    
     
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
@@ -41,6 +62,9 @@ function CompanyCoupons(): JSX.Element {
             .catch(err => errorHandler.showError(err));
         }
       }
+      const handleResetClick = () => {
+        setCoupons(initialCoupons); 
+      };
 
     return (
         <>
@@ -57,7 +81,8 @@ function CompanyCoupons(): JSX.Element {
                       <FormControlLabel value={option} control={<Radio />} label={option} />
                     </Grid> 
                    ))} 
-                </RadioGroup>
+                </RadioGroup><br />
+                <Button variant="outlined" onClick={handleResetClick}>Reset</Button>
 
             </Typography>
             </div>

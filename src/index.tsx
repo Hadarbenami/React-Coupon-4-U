@@ -4,15 +4,15 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Layout from './Components/LayoutArea/Layout/Layout';
 import 'react-toastify/dist/ReactToastify.css';
-import { authStore } from './Redux/AuthSlice';
+import { authStore } from './Redux/OurStore';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { request } from 'http';
 
 function interceptors(){
   axios.interceptors.request.use(request => {
-    if(authStore.getState().auth.token.length > 0)
-        request.headers["Authorization"] = "Bearer " + authStore.getState().auth.token;
+    if(authStore.getState().token.length > 0)
+        request.headers["Authorization"] = "Bearer " + authStore.getState().token;
     return request;
   
   })

@@ -10,29 +10,12 @@ class GeneralService{
         return (await axios.get<Coupon[]>(appConfig.url  + "general/getAllCoupons" )).data;
     }
     
-    // public async getAllCoupons():Promise<Coupon[]>{
-       
-    //     if (couponStore.getState().value.length == 0){
-    //         const response = await axios.get<Coupon[]>(appConfig.url  + "general/getAllCoupons" );
-    //         couponStore.dispatch(fill(response.data));
-    //         return response.data;
-    //     }else{
-    //         return couponStore.getState().value;
-    //     }
-    // }
+   
     public async getCouponById(id: number){
         return (await axios.get<Coupon>(appConfig.url + "general/getOneCoupon/" + id)).data;
     }
 
-    // public async getCouponById(id: number){
-    //     // const response = await axios.get<Supplier>(appConfig.url + "/Supplier/" + id);
-    //     // return response.data;
-    //     if (couponStore.getState().value.length == 0)
-    //         return (await axios.get<Coupon>(appConfig.url + "general/getOneCoupon/" + id));
-        
-    //     return couponStore.getState().value.find(c=>c.id == id);
-            
-    // }
+
 
 }
 

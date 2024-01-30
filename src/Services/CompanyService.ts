@@ -3,6 +3,8 @@ import Company from "../Models/Comapny";
 import appConfig from "../Utils/AppConfig";
 import Coupon from "../Models/Coupon";
 import { Category } from "../Models/Category";
+import { couponStore } from "../Redux/OurStore";
+import { fill } from "../Redux/CouponSlice";
 
 class CompanyService{
 
@@ -14,16 +16,26 @@ class CompanyService{
 
 
     public async getCompanyCoupons(){
-        const response = await axios.get<Coupon[]>(appConfig.url  + "company/getCompanyCoupons" );
-        return response.data;
+        // const response = await axios.get<Coupon[]>(appConfig.url  + "company/getCompanyCoupons" );
+        // return response.data;
+
+        if(couponStore.getState().value.length == 0){
+            const response = (await axios.get<Coupon[]>(appConfig.url + "company/getCompanyCoupons" ))
+            couponStore.dispatch(fill(response.data));
+            return response.data;
+        }else{
+            return couponStore.getState().value;
+        }
     }
 
     public async getCouponsByCategory(category: Category){
-        return (await axios.get<Coupon[]>(appConfig.url  + "company/getCouponsByCategory/" + category )).data;
+        //return (await axios.get<Coupon[]>(appConfig.url  + "company/getCouponsByCategory/" + category )).data;
+        return couponStore.getState().value.filter(coupon => coupon.category === category);
     }
 
     public async getCouponsByMaxPrice(price: number){
-        return (await axios.get<Coupon[]>(appConfig.url  + "company/getCouponsByMaxPrice/" + price )).data;
+        //return (await axios.get<Coupon[]>(appConfig.url  + "company/getCouponsByMaxPrice/" + price )).data;
+        return couponStore.getState().value.filter(coupon => coupon.price <= price);
     }
 
     public async addCoupon(coupon: Coupon){

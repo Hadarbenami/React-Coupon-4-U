@@ -35,10 +35,14 @@ export const couponSlice = createSlice({
             const indexToUpdate = state.value.findIndex(c => c.id ==  action.payload.id);
             if(indexToUpdate >= 0)
                 state.value[indexToUpdate] = action.payload;
+        },
+        clear: (state, action: PayloadAction<void>)=>{
+            state.value = [];
         }
+
         
     }
 });
 
-export const {fill, add, remove, update} = couponSlice.actions;
+export const {fill, add, remove, update, clear} = couponSlice.actions;
 export default couponSlice.reducer;

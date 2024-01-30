@@ -8,7 +8,9 @@
     grid-column: span 2;
 }  */
 
-
+.Layout main{
+    overflow:auto;
+}
 
 
 .Toastify__toast-theme--light.Toastify__toast--success{

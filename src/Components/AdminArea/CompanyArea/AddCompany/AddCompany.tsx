@@ -9,10 +9,12 @@ import Company from "../../../../Models/Comapny";
 import adminService from "../../../../Services/AdminService";
 import errorHandler from "../../../../Services/ErrorHandler";
 import { Box, Button, FormControl, FormLabel, Grid, TextField } from "@mui/material";
+import { authStore } from "../../../../Redux/OurStore";
 
 function AddCompany(): JSX.Element {
     const {register, handleSubmit, formState} = useForm<Company>({mode: "onBlur"}); 
     const navigate = useNavigate();
+   
    
 
     function sendForm(company: Company) {

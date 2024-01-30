@@ -2,14 +2,14 @@ import { useForm } from "react-hook-form";
 import "./AddCoupon.css";
 import Coupon from "../../../Models/Coupon";
 import { useNavigate } from "react-router-dom";
-import { Button, FormControl, FormLabel, Grid, MenuItem, Select, TextField } from "@mui/material";
+import { Button, FormControl, FormLabel, Grid, Input, MenuItem, Select, TextField } from "@mui/material";
 import companyService from "../../../Services/CompanyService";
 import { toast } from "react-toastify";
 import errorHandler from "../../../Services/ErrorHandler";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore } from "../../../Redux/OurStore";
 import { Category } from "../../../Models/Category";
 
 
@@ -17,16 +17,33 @@ import { Category } from "../../../Models/Category";
 function AddCoupon(): JSX.Element {
     const { register, handleSubmit, formState } = useForm<Coupon>({ mode: "onBlur" });
     const navigate = useNavigate();
-    const company = authStore.getState().auth.user;
+    const company = authStore.getState().user;
 
     function sendForm(coupon: Coupon){
       coupon.company = company;
-      console.log(coupon);
-      
-        
-        companyService.addCoupon(coupon)
+      if(coupon.image){
+        coupon.image = (coupon.image as FileList)[0]; 
+        let render = new FileReader();
+        render.readAsDataURL(coupon.image);
+        render.onload = function(){
+          console.log(render.result);
+          console.log(coupon);
+          companyService.addCoupon(coupon)
         .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
         .catch(err => errorHandler.showError(err))
+        };
+        render.onerror = function(error){
+          console.log("Error: ", error);
+          
+        };
+        
+      } else{
+        
+        
+      companyService.addCoupon(coupon)
+        .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
+        .catch(err => errorHandler.showError(err))
+      }
     }
 
 return (
@@ -50,21 +67,22 @@ return (
                     <span className="error">{formState.errors?.title.message}</span>
                 )}
             </Grid>
-            
+
             <Grid item xs={6}>
-            <br />
                 <TextField
-                    id="outlined-basic"
-                    label="Description"
-                    variant="outlined"
-                    {...register("description", {
-                        required: '*Description field is required',
-                    })}
-                /><br/>
-                {formState.errors?.description && (
-                    <span className="error">{formState.errors?.description.message}</span>
+                variant="outlined"
+                id="startDate"
+                type="date"
+                {...register("startDate", {
+                  required: '*Start Date field is required',
+                })}
+                
+               /> <br />
+                {formState.errors?.startDate && (
+                  <span className="error">{formState.errors?.startDate.message}</span>
                 )}
-            </Grid>
+              </Grid>
+            
 
             {/* Second row */}
             <Grid item xs={6}>
@@ -84,44 +102,6 @@ return (
             </Grid>
 
             <Grid item xs={6}>
-                <TextField
-                    id="outlined-basic"
-                    label="Price"
-                    variant="outlined"
-                    type="number"
-                    {...register("price", {
-                        required: '*Price field is required',
-                        pattern: {
-                            value: /^\d+(\.\d{1,2})?$/,
-                            message: 'Enter a valid number with up to 2 decimal places',
-                        },
-                    })}
-                    /><br/>
-                    {formState.errors?.price && (
-                        <span className="error">{formState.errors?.price.message}</span>
-                    )}
-            </Grid>
-  
-              <Grid item xs={6}>
-                <TextField
-                variant="outlined"
-                id="startDate"
-                type="date"
-                {...register("startDate", {
-                  required: '*Start Date field is required',
-                })}
-                
-               /> <br />
-                {formState.errors?.startDate && (
-                  <span className="error">{formState.errors?.startDate.message}</span>
-                )}
-              </Grid>
-  
-              <Grid item xs={6}>
-                <TextField id="image" label="Img Url" {...register("image")} />
-              </Grid>
-  
-              <Grid item xs={6}>
               
               <TextField
                 variant="outlined"
@@ -132,16 +112,34 @@ return (
                 })}
                 
                /> <br />
-  
                
                 {formState.errors?.endDate && (
                   <span className="error">{formState.errors?.endDate.message}</span>
                 )}
               </Grid>
+
+      
+
+            <Grid item xs={6}>
+                <TextField
+                    id="outlined-basic"
+                    label="Description"
+                    variant="outlined"
+                    {...register("description", {
+                        required: '*Description field is required',
+                    })}
+                /><br/>
+                {formState.errors?.description && (
+                    <span className="error">{formState.errors?.description.message}</span>
+                )}
+            </Grid>
+  
+             
   
               <Grid item xs={6}>
               <Select
                 placeholder="category"
+                defaultValue={Category.FOOD}
                 {...register("category", {
                     required: '*Category field is required',
                 })}
@@ -162,6 +160,32 @@ return (
                   <span className="error">{formState.errors?.category.message}</span>
                 )}
               </Grid>
+             
+              <Grid item xs={6}>
+                <TextField
+                    id="outlined-basic"
+                    label="Price"
+                    variant="outlined"
+                    type="number"
+                    {...register("price", {
+                        required: '*Price field is required',
+                        pattern: {
+                            value: /^\d+(\.\d{1,2})?$/,
+                            message: 'Enter a valid number with up to 2 decimal places',
+                        },
+                    })}
+                    /><br/>
+                    {formState.errors?.price && (
+                        <span className="error">{formState.errors?.price.message}</span>
+                    )}
+            </Grid>
+  
+             
+  
+              <Grid item xs={6}>
+                <Input type= "file" id="image" {...register("image")} />
+              </Grid>
+             
             </Grid>
           </DemoContainer>
         </LocalizationProvider>

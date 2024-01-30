@@ -17,7 +17,7 @@ function Purchase(): JSX.Element {
             .then(c => customerService.purchaseCoupon(c)
                 .then(() => {toast.success("Coupon Purchased!");navigate("/customer/getMyCoupons")})
                 .catch(err => errorHandler.showError(err)))
-            .catch(err => errorHandler.showError(err))
+            .catch(err => {errorHandler.showError(err); navigate("/customer/getAllCoupons")})
     }, [])
     
     

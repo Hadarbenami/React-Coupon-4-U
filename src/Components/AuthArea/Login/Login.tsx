@@ -8,7 +8,7 @@ import Credentials from "../../../Models/Credentials";
 import AdminNavbar from "../../AdminArea/AdminNavbar/AdminNavbar";
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from "@mui/material";
 import { toast } from "react-toastify";
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore } from "../../../Redux/OurStore";
 
 
 function Login(): JSX.Element {
@@ -24,11 +24,11 @@ function Login(): JSX.Element {
                     navigate("/admin/getAllCompanies")
                 }
                 else if(creds.clientType == "COMPANY"){
-                    toast.success("Welcome back " + authStore.getState().auth.user.name);
+                    toast.success("Welcome back " + authStore.getState().user.name);
                     navigate("/company/getCompanyCoupons")
                 }
                 else if(creds.clientType == "CUSTOMER"){
-                    toast.success("Welcome back " + authStore.getState().auth.user.firstName + " " + authStore.getState().auth.user.lastName);
+                    toast.success("Welcome back " + authStore.getState().user.firstName + " " + authStore.getState().user.lastName);
                     navigate("/customer/getAllCoupons")
                 }
                

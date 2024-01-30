@@ -26,7 +26,7 @@ import { companyStore } from '../../../../Redux/OurStore';
 import { NavLink, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import {TextField, Tooltip, colors } from '@mui/material';
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Tooltip, colors } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -188,27 +188,39 @@ function Row(props: { row: ReturnType<typeof createData>;  onDeleteClick: (custo
 
 export default function Copmanies() {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [deleteCompanyId, setDeleteCompanyId] = useState<number | null>(null);
   
   useEffect(() => {
     adminService.getAllCompanies()
         .then(comp => setCompanies(comp))
-        .catch(err => alert(err.message));
+        .catch(err => errorHandler.showError(err));
 
     companyStore.subscribe(() => {
         adminService.getAllCompanies()
             .then(comp => setCompanies(comp))
-            .catch(err => alert(err.message));
+            .catch(err => errorHandler.showError(err));
       });
     }, []);
 
-    function handleDeleteClick(companyId: number) {
-      adminService.deleteCompany(companyId)
-        .then(() => {
-          toast.success("Company deleted!");
-          setCompanies(prevCompany => prevCompany.filter(company => company.id !== companyId));
-        })
-        .catch(err => errorHandler.showError(err));
-    }
+    const handleDeleteClick = (companyId: number) => {
+      setDeleteCompanyId(companyId);
+    };
+  
+    const handleConfirmDelete = () => {
+      if (deleteCompanyId !== null) {
+        adminService.deleteCompany(deleteCompanyId)
+          .then(() => {
+            toast.success("Company deleted!");
+            setCompanies(prevCompany => prevCompany.filter(company => company.id !== deleteCompanyId));
+          })
+          .catch(err => errorHandler.showError(err))
+          .finally(() => setDeleteCompanyId(null));
+      }
+    };
+  
+    const handleCancelDelete = () => {
+      setDeleteCompanyId(null);
+    };
 
     function handleEditClick(updatedCompany: Company) {
         adminService.updateCompany(updatedCompany)
@@ -222,10 +234,6 @@ export default function Copmanies() {
           })
           .catch(err => errorHandler.showError(err));
       }
-
-      // const filteredCompanies = companies.filter(company =>
-      //   company.id.toString().includes(searchInput)
-      // );
     
   return (
     <>
@@ -256,15 +264,23 @@ export default function Copmanies() {
         </TableBody>
       </Table>
     </TableContainer>
+    <Dialog open={deleteCompanyId !== null} onClose={handleCancelDelete}>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this company?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelDelete} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="primary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
     <br /><br />
-    {/* <TextField
-          label="Search"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          variant="outlined"  
-          size="small"
-          style={{ width: '150px', marginRight: '10px', padding:'0'}}
-        />  */}
        <div style={{ textAlign: 'center'}}>
           <NavLink to={"/admin/addCompany"}>
             <Button variant="outlined">Add Company</Button>

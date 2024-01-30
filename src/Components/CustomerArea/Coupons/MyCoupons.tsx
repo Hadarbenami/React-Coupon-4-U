@@ -6,19 +6,50 @@ import customerService from "../../../Services/CustomerService";
 import CouponCard from "../../GeneralArea/CouponCard/CouponCard";
 import errorHandler from "../../../Services/ErrorHandler";
 import { Category } from "../../../Models/Category";
-import { Avatar, Divider, FormControlLabel, Grid, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Radio, RadioGroup, Slider, Typography } from "@mui/material";
+import { Avatar, Button, Divider, FormControlLabel, Grid, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Radio, RadioGroup, Slider, Typography } from "@mui/material";
 import React from "react";
+import { authStore, couponStore } from "../../../Redux/OurStore";
 
 function MyCoupons(): JSX.Element {
     
 const [coupons, setCoupons] = useState<Coupon[]>([]);
+const [initialCoupons, setInitialCoupons] = useState<Coupon[]>([]); 
 const options = ['Food', 'Clothing', 'Electronics', 'Jewelry', 'Makeup', 'Care'];
+let counter: number = 0;
 
-useEffect(()=>{
-    customerService.getCustomerCoupons()
-        .then(coup => setCoupons(coup))
-        .catch(err => errorHandler.showError(err));    
+useEffect(() => {
+  fetchCoupons(); 
+  const unsubscribe = couponStore.subscribe(() => {
+    if (authStore.getState().user !== null) {
+      fetchCoupons();
+    }
+  });
+  return ()=>{
+    unsubscribe();
+  }
 }, []);
+
+const fetchCoupons = () => {
+  customerService.getCustomerCoupons()
+    .then(coup => {
+      setCoupons(coup);
+      setInitialCoupons(coup); 
+    })
+    .catch(err => errorHandler.showError(err));
+};
+
+// useEffect(()=>{
+//     customerService.getCustomerCoupons()
+//         .then(coup => setCoupons(coup))
+//         .catch(err => errorHandler.showError(err));  
+        
+//         couponStore.subscribe(() => {
+//           customerService.getCustomerCoupons()
+//           .then(coup => {setCoupons(coup)
+//           })
+//           .catch(err => errorHandler.showError(err)); 
+//         });
+// }, []);
 
 const handleSliderChange = (event: Event, newValue: number | number[]) => {
     const max = newValue as number;
@@ -45,6 +76,11 @@ const handleSliderChange = (event: Event, newValue: number | number[]) => {
         .catch(err => errorHandler.showError(err));
     }
   }
+
+  const handleResetClick = () => {
+    setCoupons(initialCoupons); 
+  };
+
     return (
         <>
         <div className="MyCoupons">
@@ -60,18 +96,21 @@ const handleSliderChange = (event: Event, newValue: number | number[]) => {
                       <FormControlLabel value={option} control={<Radio />} label={option} />
                     </Grid> 
                    ))} 
-                </RadioGroup>
+                </RadioGroup><br />
+                <Button variant="outlined" onClick={handleResetClick}>Reset</Button>
 
             </Typography>
             </div>
             <div className="Container">
              {/* {coupons?.map(c => <CouponCard key={c.id} coupon={c}/> )} */}
              <List sx={{ width: '80%', bgcolor: 'background.paper', margin: 5 }}>
-              {coupons?.map((coupon) => (
+              {coupons?.map((coupon) => {
+                counter += coupon.price;
+                return(
                 <React.Fragment key={coupon.id}>
                   <ListItem alignItems="flex-start">
                     <ListItemAvatar>
-                      <Avatar alt={coupon.title} src={coupon.image} sx={{ borderRadius: 0, width: 100, height: 100, marginLeft: 5 }} />
+                      <Avatar alt={coupon.title} src={coupon.image as string} sx={{ borderRadius: 0, width: 100, height: 100, marginLeft: 5 }} />
                     </ListItemAvatar>
                     <ListItemText
                       sx={{ margin: 5 }}
@@ -97,7 +136,10 @@ const handleSliderChange = (event: Event, newValue: number | number[]) => {
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </React.Fragment>
-              ))}
+                );
+             })}
+              <p id="total">Total Price:</p>
+              <p id="price"> {counter} $</p>
             </List>
              </div>
         </div>

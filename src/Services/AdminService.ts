@@ -4,29 +4,11 @@ import { companyStore } from "../Redux/OurStore";
 import appConfig from "../Utils/AppConfig";
 import { add, fill, remove, update } from "../Redux/CompanySlice";
 import Customer from "../Models/Customer";
-import { authStore } from "../Redux/AuthSlice";
 
 class AdminService{
 
     //get all
     public async getAllCompanies(){   // redux
-        // try{
-        //     if(companyStore.getState().value.length == 0){
-        //         //console.log(authStore.getState());
-                
-        //         const response = (await axios.get<Company[]>(appConfig.url + "admin/getAllCompanies", {headers: {"Authorization": "Bearer " + localStorage.getItem("token")}}))
-        //         companyStore.dispatch(fill(response.data));
-        //         return response.data;
-        //     }else{
-        //         return companyStore.getState().value;
-        //     }
-        // } catch(error) {
-        //     console.error('failed:', error);
-            
-        //     throw error;
-
-        // }
-
         if(companyStore.getState().value.length == 0){
             //console.log(authStore.getState());
             

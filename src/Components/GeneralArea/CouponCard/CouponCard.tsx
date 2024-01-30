@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Coupon from "../../../Models/Coupon";
 import { Link, useNavigate } from "react-router-dom";
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore } from "../../../Redux/OurStore";
 import customerService from "../../../Services/CustomerService";
 
 
@@ -24,7 +24,7 @@ export default function CouponCard(props: CouponProps) {
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
         sx={{ height: 140 }}
-        image={props.coupon.image}
+        image={props.coupon.image as string}
         title={props.coupon.title}
       />
        <div className="price-circle">
@@ -41,7 +41,7 @@ export default function CouponCard(props: CouponProps) {
       <CardActions>
         
       {
-      authStore.getState().auth.user?.role === 'customer'  
+      authStore.getState().user?.role === 'customer'  
         ? <Link to={"/customer/purchaseCoupon/" + props.coupon.id}>
             <Button size="small">BUY</Button>
           </Link>

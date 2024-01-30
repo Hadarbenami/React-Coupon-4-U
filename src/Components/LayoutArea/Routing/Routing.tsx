@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import "./Routing.css";
 import Copmanies from "../../AdminArea/CompanyArea/Copmanies/Copmanies";
 
@@ -17,28 +17,78 @@ import UpdateCoupon from "../../CompanyArea/UpdateCoupon/UpdateCoupon";
 import CusCoupons from "../../CustomerArea/Coupons/MyCoupons";
 import Purchase from "../../CustomerArea/Purchase/Purchase";
 import MyCoupons from "../../CustomerArea/Coupons/MyCoupons";
+import { useEffect, useState } from "react";
+import User from "../../../Models/User";
+import { authStore } from "../../../Redux/OurStore";
 
 function Routing(): JSX.Element {
+    //const user = authStore.getState().user?.role;
+    const [user, setUser] = useState<User>();
+    
+    useEffect(()=>{
+        
+        setUser(authStore.getState().user)
+        console.log(authStore.getState().user);
+      
+
+        authStore.subscribe( () =>{
+            setUser(authStore.getState().user)
+            console.log("subscribe",authStore.getState().user);
+            console.log(user);
+        
+            
+        });
+    
+        
+    },[])
     return (
         <div className="Routing">
+            
+
             <Routes>
                 <Route path="/" element={<Coupons/>}/>
-                <Route path="auth/login" element= {<Login/>}/>
+                <Route path="auth/login" element= {<Login/> }/>
+                
                 <Route path="/couponDetails/:couponId" element={<CouponDetails/>} />
 
-                <Route path="admin/getAllCompanies" element={<Copmanies/>}/>
-                <Route path="admin/addCompany" element={<AddCompany />} />
-                <Route path="admin/getAllCustomers" element= {<Customers/>}/>
-                <Route path="admin/addCustomer" element={<AddCustomer />} />
+               
+                
+                
+                {user?.role === 'admin' &&(
+                    <>
+                        <Route path="admin/getAllCompanies" element={<Copmanies />} />
+                        <Route path="admin/addCompany" element={<AddCompany />} />
+                        <Route path="admin/getAllCustomers" element={<Customers />} />
+                        <Route path="admin/addCustomer" element={<AddCustomer />} />
+                        <Route path="*" element= {<Login/>}/>
 
-                <Route path="company/getCompanyDetails" element={<CompanyDetails/>} />
-                <Route path="company/getCompanyCoupons" element={<CompanyCoupons/>} />
-                <Route path="company/addCoupon" element={<AddCoupon/>} />
-                <Route path="company/updateCoupon/:couponId" element={<UpdateCoupon/>} />
+                    </>
+                )}
+               
 
-                <Route path="customer/getAllCoupons" element={<Coupons/>} /> 
-                <Route path="customer/purchaseCoupon/:couponId" element={<Purchase/>} />
-                <Route path="customer/getMyCoupons" element={<MyCoupons/>} /> 
+                {user?.role === 'company' && (
+                    <>
+                        <Route path="company/getCompanyDetails" element={<CompanyDetails/>} />
+                        <Route path="company/getCompanyCoupons" element={<CompanyCoupons/>} />
+                        <Route path="company/addCoupon" element={<AddCoupon/>} />
+                        <Route path="company/updateCoupon/:couponId" element={<UpdateCoupon/>} />
+                    </>
+                )}
+                
+
+                {user?.role === 'customer' && (
+                    <>
+                        <Route path="customer/getAllCoupons" element={<Coupons/>} /> 
+                        <Route path="customer/purchaseCoupon/:couponId" element={<Purchase/>} />
+                        <Route path="customer/getMyCoupons" element={<MyCoupons/>} /> 
+                    </>
+                )}
+               
+
+                <Route path="/" element= {<Login/>}/> 
+                <Route path="*" element= {<p>Page not found...</p>}/>
+                
+
                 
                 
             </Routes>

@@ -19,7 +19,7 @@ function CompanyDetails(): JSX.Element {
         companyService.getCompany()
             .then(c => setCompany(c))
             .catch(err => errorHandler.showError(err))
-    });
+    }, []);
     companyService.getCompany()
     return (
         <div className="CompanyDetails">

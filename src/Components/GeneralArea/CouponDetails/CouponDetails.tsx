@@ -5,63 +5,102 @@ import Coupon from "../../../Models/Coupon";
 import generalService from "../../../Services/GeneralService";
 import { useEffect, useState } from "react";
 import errorHandler from "../../../Services/ErrorHandler";
-import { IconButton } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import companyService from "../../../Services/CompanyService";
 import { toast } from "react-toastify";
 import EditIcon from '@mui/icons-material/Edit';
 
 import User from "../../../Models/User";
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore, couponStore } from "../../../Redux/OurStore";
+import adminService from "../../../Services/AdminService";
 
   function CouponDetails() {
     const params = useParams();
     const id: number = +params.couponId!;
     const [coupon, setCoupon] = useState<Coupon>();
+    const [coupons, setCoupons] = useState<Coupon[]>([]);
+    // const [user, setUser]= useState<User>();
     const navigate = useNavigate();
+    const [deleteCouponId, setDeleteCouponId] = useState<number | null>(null);
 
+    
     useEffect(() => {
         generalService.getCouponById(id)
         .then(coup => setCoupon(coup))
-        .catch(err => errorHandler.showError(err))
+        .catch(err => errorHandler.showError(err));
         
     },[]);
 
-    const [user, setUser]= useState<User>();
+    useEffect(() => {
+      companyService.getCompanyCoupons()
+      .then(coups => setCoupons(coups))
+      .catch(err => errorHandler.showError(err));
 
-    useEffect(() =>{
-      if(authStore.getState().auth.user != null){
-        setUser(authStore.getState().auth.user);
-      } else{
-        setUser(null);
-      }
-      const unsubscribe =  authStore.subscribe(() =>{
-        if(authStore.getState().auth.user != null){
-          setUser(authStore.getState().auth.user);
-        } else{
-          setUser(null);
-        }
-      })
-      return()=>{ // return will run this function when this component is destroyed
-        unsubscribe();
-      }
-    }, []);
+      couponStore.subscribe(() => {
+        companyService.getCompanyCoupons()
+        .then(coups => setCoupons(coups))
+        .catch(err => errorHandler.showError(err))
+      });
+
+    }, [])
+
+    // useEffect(() =>{
+    //   if(authStore.getState().user != null){
+    //     setUser(authStore.getState().user);
+    //   } else{
+    //     setUser(null);
+    //   }
+    //   const unsubscribe =  authStore.subscribe(() =>{
+    //     if(authStore.getState().user != null){
+    //       setUser(authStore.getState().user);
+    //     } else{
+    //       setUser(null);
+    //     }
+    //   })
+    //   return()=>{ // return will run this function when this component is destroyed
+    //     unsubscribe();
+    //   }
+    // }, []);
 
     
-    function handleDeleteClick(couponId: number) {
-        companyService.deleteCoupon(couponId)
-          .then(() => {
-            toast.success("Coupon deleted!");
-            navigate("/company/getCompanyCoupons")
-          })
-          .catch(err => errorHandler.showError(err));
-      }
+    // function handleDeleteClick(couponId: number) {
+    //     companyService.deleteCoupon(couponId)
+    //       .then(() => {
+    //         toast.success("Coupon deleted!");
+    //         navigate("/company/getCompanyCoupons")
+    //       })
+    //       .catch(err => errorHandler.showError(err));
+    //   }
+
+      const handleDeleteClick = (couponId: number) => {
+        setDeleteCouponId(couponId);
+      };
+    
+      const handleConfirmDelete = () => {
+        if (deleteCouponId !== null) {
+          companyService.deleteCoupon(deleteCouponId)
+            .then(() => {
+              toast.success("Coupon deleted!");
+              
+              setCoupons(prevCoupon => prevCoupon.filter(coup => coup.id !== deleteCouponId))
+              navigate("/company/getCompanyCoupons")
+            })
+            .catch(err => errorHandler.showError(err))
+            .finally(() => setDeleteCouponId(null));
+        }
+      };
+    
+      const handleCancelDelete = () => {
+        setDeleteCouponId(null);
+      };
+  
     
 
     return (
         <div className="CouponDetails">
             <div className="image-container">
-            <img src={coupon?.image} alt="Coupon" />
+            <img src={coupon?.image as string} alt="Coupon" />
             </div>
             <div className="details-container">
                 <h1>{coupon?.title}</h1>
@@ -74,7 +113,7 @@ import { authStore } from "../../../Redux/AuthSlice";
                 <p id="des">Description: {coupon?.description}</p>
             </div><br /><br />
 
-            {authStore.getState().auth.user?.email == coupon?.company.email && (
+            {authStore.getState().user?.email == coupon?.company.email && (
                  <>
                     <IconButton
                     aria-label="delete"
@@ -91,6 +130,22 @@ import { authStore } from "../../../Redux/AuthSlice";
                     >
                     <EditIcon />
                     </IconButton>
+                    <Dialog open={deleteCouponId !== null} onClose={handleCancelDelete}>
+                    <DialogTitle>Confirm Delete</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        Are you sure you want to delete this coupon?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCancelDelete} color="primary">
+                        Cancel
+                      </Button>
+                      <Button onClick={handleConfirmDelete} color="primary">
+                        Yes
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                     </>
                     
                 )}

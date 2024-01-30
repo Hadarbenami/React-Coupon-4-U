@@ -21,7 +21,7 @@ import errorHandler from '../../../../Services/ErrorHandler';
 import { toast } from 'react-toastify';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import { Button, TextField, Tooltip } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Tooltip } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { NavLink } from 'react-router-dom';
 
@@ -190,6 +190,7 @@ function Row(props: { row: ReturnType<typeof createData>;  onDeleteClick: (custo
 
 export default function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [deleteCustomerId, setDeleteCustomerId] = useState<number | null>(null);
 
     useEffect( () =>{
         adminService.getAllCustomers()
@@ -197,15 +198,26 @@ export default function Customers() {
             .catch(err => alert(err.massage));
             
     }, []);
-
-    function handleDeleteClick(customerId: number) {
-      adminService.deleteCustomer(customerId)
-        .then(() => {
-          toast.success("Customer deleted!");
-          setCustomers(prevCustomers => prevCustomers.filter(customer => customer.id !== customerId));
-        })
-        .catch(err => errorHandler.showError(err));
-    }
+   
+    const handleDeleteClick = (customerId: number) => {
+      setDeleteCustomerId(customerId);
+    };
+  
+    const handleConfirmDelete = () => {
+      if (deleteCustomerId !== null) {
+        adminService.deleteCustomer(deleteCustomerId)
+          .then(() => {
+            toast.success("Customer deleted!");
+            setCustomers(prevCustomer => prevCustomer.filter(customer => customer.id !== deleteCustomerId));
+          })
+          .catch(err => errorHandler.showError(err))
+          .finally(() => setDeleteCustomerId(null));
+      }
+    };
+  
+    const handleCancelDelete = () => {
+      setDeleteCustomerId(null);
+    };
 
     function handleEditClick(updatedCustomer: Customer) {
       adminService.updateCustomer(updatedCustomer)
@@ -249,6 +261,22 @@ export default function Customers() {
         </TableBody>
       </Table>
     </TableContainer>
+    <Dialog open={deleteCustomerId !== null} onClose={handleCancelDelete}>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this customer?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelDelete} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="primary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
     
     <br /><br />
     <div style={{ textAlign: 'center' }}>

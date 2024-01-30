@@ -8,7 +8,7 @@ import errorHandler from "../../../Services/ErrorHandler";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { authStore } from "../../../Redux/AuthSlice";
+import { authStore } from "../../../Redux/OurStore";
 import { Category } from "../../../Models/Category";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
@@ -18,7 +18,7 @@ import generalService from "../../../Services/GeneralService";
 function UpdateCoupon(): JSX.Element {
     const { register, handleSubmit, formState, setValue } = useForm<Coupon>({ mode: "onBlur" });
     const navigate = useNavigate();
-    const company = authStore.getState().auth.user;
+    const company = authStore.getState().user;
     const id:number = +(useParams().couponId!);
     
     useEffect(()=>{

@@ -20,6 +20,7 @@
     "@types/react-dom": "^18.2.18",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.3",
+    "browser-image-resizer": "^2.4.1",
     "dayjs": "^1.11.10",
     "jwt-decode": "^4.0.0",
     "material-ui-popup-state": "^5.0.10",

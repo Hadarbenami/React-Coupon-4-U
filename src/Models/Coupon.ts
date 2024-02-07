@@ -11,9 +11,9 @@ class Coupon{
     public endDate: Date;
     public amount: number;
     public price: number;
-    public image: string | FileList | File;
+    public image: string | FileList | File |FileReader | ArrayBuffer | unknown;
 
-    constructor(id: number, company: Comapny, category: Category , title: string, description: string, startDate: Date, endDate: Date, amount: number ,price: number, image: string | FileList | File) {
+    constructor(id: number, company: Comapny, category: Category , title: string, description: string, startDate: Date, endDate: Date, amount: number ,price: number, image: string | FileList | File | FileReader | ArrayBuffer | unknown) {
     
         this.id = id;
         this.company = company;

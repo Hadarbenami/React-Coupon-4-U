@@ -8,11 +8,15 @@ import CouponCard from "../../GeneralArea/CouponCard/CouponCard";
 import { NavLink } from "react-router-dom";
 import { Button, FormControlLabel, Grid, Radio, RadioGroup, Slider, Typography } from "@mui/material";
 import { Category } from "../../../Models/Category";
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CloseIcon from '@mui/icons-material/Close';
+import SortIcon from '@mui/icons-material/Sort';
 
 function CompanyCoupons(): JSX.Element {
     const[coupons, setCoupons] = useState<Coupon[]>([]);
     const [initialCoupons, setInitialCoupons] = useState<Coupon[]>([]); 
     const options = ['Food', 'Clothing', 'Electronics', 'Jewelry', 'Makeup', 'Care'];
+    const [isSortOpen, setIsSortOpen] = useState(false);
 
 
     useEffect(() => {
@@ -38,6 +42,9 @@ function CompanyCoupons(): JSX.Element {
     };
 
   
+    const handleSortButtonClick = () => {
+      setIsSortOpen(!isSortOpen);
+    };
     
     
 
@@ -64,12 +71,13 @@ function CompanyCoupons(): JSX.Element {
       }
       const handleResetClick = () => {
         setCoupons(initialCoupons); 
+        setIsSortOpen(false);
       };
 
     return (
         <>
           <div className="CompanyCoupons">
-            <div className="sort">
+            {/* <div className="sort">
             <Typography variant="h6" gutterBottom>
                       Sort & Filter
                 <br /><br /><Grid item xs={12}>
@@ -85,7 +93,40 @@ function CompanyCoupons(): JSX.Element {
                 <Button variant="outlined" onClick={handleResetClick}>Reset</Button>
 
             </Typography>
-            </div>
+            </div> */}
+
+<div className="sort">
+      <Button variant="text" onClick={handleSortButtonClick} >
+        {isSortOpen ? <CloseIcon/> : <SortIcon/>}
+      </Button>
+      {isSortOpen && (
+        <Typography variant="h6" gutterBottom>
+          {/* Sort & Filter */}
+          {/* <br />
+          <br /> */} 
+         <div style={{ textAlign: 'right'}}>
+          <RefreshIcon onClick={handleResetClick} />
+        </div>
+      
+          <Grid item xs={12}>
+            <p style={{fontSize: 'small'}}>By Price</p>
+            <Slider onChange={handleSliderChange} valueLabelDisplay="auto" max={2000} />
+          </Grid>
+          <br />
+          <p style={{fontSize: 'small'}}>By Category</p>
+          <RadioGroup onChange={handleRadioChange}>
+            {options.map((option, index) => (
+              <Grid item xs={4} key={index}>
+                <FormControlLabel value={option} control={<Radio />} label={option} />
+              </Grid>
+            ))}
+          </RadioGroup>
+          <br />
+          
+        </Typography>
+      )}
+    </div>
+
             
             <div className="Container">
             {coupons?.map(coup => <CouponCard key={coup.id} coupon={coup}/>)}

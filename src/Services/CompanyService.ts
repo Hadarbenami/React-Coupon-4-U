@@ -4,7 +4,8 @@ import appConfig from "../Utils/AppConfig";
 import Coupon from "../Models/Coupon";
 import { Category } from "../Models/Category";
 import { couponStore } from "../Redux/OurStore";
-import { fill } from "../Redux/CouponSlice";
+import { fill, update, remove, add } from "../Redux/CouponSlice";
+
 
 class CompanyService{
 
@@ -16,9 +17,6 @@ class CompanyService{
 
 
     public async getCompanyCoupons(){
-        // const response = await axios.get<Coupon[]>(appConfig.url  + "company/getCompanyCoupons" );
-        // return response.data;
-
         if(couponStore.getState().value.length == 0){
             const response = (await axios.get<Coupon[]>(appConfig.url + "company/getCompanyCoupons" ))
             couponStore.dispatch(fill(response.data));
@@ -39,15 +37,23 @@ class CompanyService{
     }
 
     public async addCoupon(coupon: Coupon){
-        return (await axios.post<string>(appConfig.url + "company/addCoupon" , coupon)).data;
+        const response = await axios.post<Coupon>(appConfig.url + "company/addCoupon" , coupon);
+        couponStore.dispatch(add(response.data));
+        return response.data;
     }
 
     public async updateCoupon(coupon: Coupon){
-        return (await axios.put<string>(appConfig.url + "company/updateCoupon" , coupon)).data;
+        const response =  (await axios.put<string>(appConfig.url + "company/updateCoupon" , coupon))
+        couponStore.dispatch(update(coupon));
+        return response.data;
+        
     }
 
     public async deleteCoupon(id: number){
-        return (await axios.delete<string>(appConfig.url + "company/deleteCoupon/" + id)).data;
+        const response =  (await axios.delete<string>(appConfig.url + "company/deleteCoupon/" + id))
+        couponStore.dispatch(remove(id));
+        return response.data;
+
     }
 }
 

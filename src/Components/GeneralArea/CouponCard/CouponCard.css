@@ -2,9 +2,14 @@
 .CouponCard {
     position: relative; 
     margin: 10px; 
-    max-width: 200px;
+    max-width: 220px;
+    min-width: 220px;
+    max-height: 280px;
+    min-height: 280px;
     
   }
+
+  .CouponCard .MuiCardCon
   
 img{
     width: 50%;

@@ -20,7 +20,7 @@ import adminService from "../../../Services/AdminService";
     const id: number = +params.couponId!;
     const [coupon, setCoupon] = useState<Coupon>();
     const [coupons, setCoupons] = useState<Coupon[]>([]);
-    // const [user, setUser]= useState<User>();
+    const [user, setUser]= useState<User>();
     const navigate = useNavigate();
     const [deleteCouponId, setDeleteCouponId] = useState<number | null>(null);
 
@@ -32,36 +32,24 @@ import adminService from "../../../Services/AdminService";
         
     },[]);
 
-    useEffect(() => {
-      companyService.getCompanyCoupons()
-      .then(coups => setCoupons(coups))
-      .catch(err => errorHandler.showError(err));
 
-      couponStore.subscribe(() => {
-        companyService.getCompanyCoupons()
-        .then(coups => setCoupons(coups))
-        .catch(err => errorHandler.showError(err))
-      });
-
-    }, [])
-
-    // useEffect(() =>{
-    //   if(authStore.getState().user != null){
-    //     setUser(authStore.getState().user);
-    //   } else{
-    //     setUser(null);
-    //   }
-    //   const unsubscribe =  authStore.subscribe(() =>{
-    //     if(authStore.getState().user != null){
-    //       setUser(authStore.getState().user);
-    //     } else{
-    //       setUser(null);
-    //     }
-    //   })
-    //   return()=>{ // return will run this function when this component is destroyed
-    //     unsubscribe();
-    //   }
-    // }, []);
+    useEffect(() =>{
+      if(authStore.getState().user != null){
+        setUser(authStore.getState().user);
+      } else{
+        setUser(null);
+      }
+      const unsubscribe =  authStore.subscribe(() =>{
+        if(authStore.getState().user != null){
+          setUser(authStore.getState().user);
+        } else{
+          setUser(null);
+        }
+      })
+      return()=>{ // return will run this function when this component is destroyed
+        unsubscribe();
+      }
+    }, []);
 
     
     // function handleDeleteClick(couponId: number) {
@@ -113,20 +101,34 @@ import adminService from "../../../Services/AdminService";
                 <p id="des">Description: {coupon?.description}</p>
             </div><br /><br />
 
-            {authStore.getState().user?.email == coupon?.company.email && (
+            {authStore.getState().user?.email === coupon?.company.email && (
                  <>
+                    <div className="buttons" >
                     <IconButton
                     aria-label="delete"
                     id="delete"
                     onClick={() => handleDeleteClick(coupon.id)}
+                    sx={{
+                      transition: 'transform 0.3s, box-shadow 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.5)',
+                      }
+                    }}
                   >
                     <DeleteIcon />
                 </IconButton>
-
                     <IconButton
                     aria-label="update"
                     id="update"
                     onClick={() => navigate("/company/updateCoupon/" + coupon.id)}
+                    sx={{
+                      transition: 'transform 0.3s, box-shadow 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.5)',
+                      }
+                    }}
                     >
                     <EditIcon />
                     </IconButton>
@@ -146,8 +148,9 @@ import adminService from "../../../Services/AdminService";
                       </Button>
                     </DialogActions>
                   </Dialog>
+                  </div>
                     </>
-                    
+                                   
                 )}
 			
         </div>

@@ -11,6 +11,9 @@ import Coupon from "../../../Models/Coupon";
 import { Link, useNavigate } from "react-router-dom";
 import { authStore } from "../../../Redux/OurStore";
 import customerService from "../../../Services/CustomerService";
+import errorHandler from "../../../Services/ErrorHandler";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 
 interface CouponProps{
@@ -18,10 +21,28 @@ interface CouponProps{
 }
 
 export default function CouponCard(props: CouponProps) {
+  const [isPurchased, setIsPurchased]  = useState<boolean>(false);
+  const user = authStore.getState().user?.role;
+
+
+  useEffect(() =>{
+    if(user === 'customer'){
+      customerService.getCustomerCoupons()
+      .then(coupons => setIsPurchased(coupons.some(coup => coup.id === props.coupon.id)))
+      .catch(err => errorHandler.showError(err));
+    }
+  }, [props.coupon.id, user])
+ 
+
+  const handleButtonClick = () => {
+    toast.error("Coupon can be purchased only once");
+  };
+
+
   return (
     <>
     <div className="CouponCard">
-    <Card sx={{ maxWidth: 345 }}>
+    <Card >
       <CardMedia
         sx={{ height: 140 }}
         image={props.coupon.image as string}
@@ -40,13 +61,39 @@ export default function CouponCard(props: CouponProps) {
       </CardContent>
       <CardActions>
         
-      {
-      authStore.getState().user?.role === 'customer'  
+      {/* {
+
+      authStore.getState().user?.role === 'customer' 
         ? <Link to={"/customer/purchaseCoupon/" + props.coupon.id}>
             <Button size="small">BUY</Button>
           </Link>
         : <Button size="small">BUY</Button>
+    } */}
+
+    {/* {user === 'customer' && !isPurchased && 
+     <Link to={"/customer/purchaseCoupon/" + props.coupon.id}>
+      <Button size="small">BUY</Button>
+      </Link>
+
     }
+
+    {isPurchased && user === 'customer' &&
+
+      <Button size="small" style={{ color: 'red' }}>Purchased</Button>
+      
+    } */}
+
+    {user === 'customer' && isPurchased ? (
+        <Button size="small" style={{ color: 'red' }} onClick={handleButtonClick}>
+          Purchased
+        </Button>
+      ) : (
+        <Link to={user === 'customer' ? `/customer/purchaseCoupon/${props.coupon.id}` : '/auth/login'}>
+          <Button size="small">BUY</Button>
+        </Link>
+      )}
+
+       
         <Link to={"/couponDetails/" + props.coupon.id}>
           <Button size="small">Learn More</Button>
        </Link>
@@ -56,4 +103,5 @@ export default function CouponCard(props: CouponProps) {
     </>
   );
 }
+
 

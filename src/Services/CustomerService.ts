@@ -3,7 +3,7 @@ import Coupon from "../Models/Coupon";
 import appConfig from "../Utils/AppConfig";
 import { Category } from "../Models/Category";
 import { couponStore } from "../Redux/OurStore";
-import { fill } from "../Redux/CouponSlice";
+import { add, fill } from "../Redux/CouponSlice";
 
 class CustomerService{
     
@@ -34,7 +34,9 @@ class CustomerService{
     }
 
     public async purchaseCoupon(coupon: Coupon){
-        return (await axios.post<string>(appConfig.url  + "customer/purchaseCoupon" , coupon )).data;
+        const response = await axios.post<string>(appConfig.url  + "customer/purchaseCoupon" , coupon );
+        couponStore.dispatch(add(coupon));
+        return response.data;
     }
 }
 

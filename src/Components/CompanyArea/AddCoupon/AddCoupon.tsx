@@ -11,6 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { authStore } from "../../../Redux/OurStore";
 import { Category } from "../../../Models/Category";
+import { blob } from "stream/consumers";
+import { readAndCompressImage } from "browser-image-resizer";
 
 
 
@@ -19,32 +21,61 @@ function AddCoupon(): JSX.Element {
     const navigate = useNavigate();
     const company = authStore.getState().user;
 
-    function sendForm(coupon: Coupon){
-      coupon.company = company;
-      if(coupon.image){
-        coupon.image = (coupon.image as FileList)[0]; 
-        let render = new FileReader();
-        render.readAsDataURL(coupon.image);
+
+    const convertToBase64 = (blob: Blob) => {
+      return new Promise(resolve => {
+        var render = new FileReader();
         render.onload = function(){
-          console.log(render.result);
-          console.log(coupon);
-          companyService.addCoupon(coupon)
-        .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
-        .catch(err => errorHandler.showError(err))
+          resolve(render.result);
         };
-        render.onerror = function(error){
-          console.log("Error: ", error);
-          
-        };
-        
-      } else{
-        
-        
-      companyService.addCoupon(coupon)
-        .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
-        .catch(err => errorHandler.showError(err))
+        render.readAsDataURL(blob);
+      })
+    };
+    async function sendForm(coupon: Coupon) {
+      coupon.company = company;
+    
+      if ((coupon.image as FileList).length > 0) {
+        let image = await readAndCompressImage((coupon.image as FileList)[0]);
+        coupon.image = await convertToBase64(image);
+      }else{
+        coupon.image = "";
       }
+    
+      console.log(coupon);
+      
+      companyService.addCoupon(coupon)
+        .then(coup => { toast.success("Coupon Added!"); navigate("/company/getCompanyCoupons") })
+        .catch(err => errorHandler.showError(err));
     }
+
+    // async function sendForm(coupon: Coupon){
+    //   coupon.company = company;
+    //   if(coupon.image){
+    //     // coupon.image = (coupon.image as FileList)[0]; 
+    //     // let render = new FileReader();
+    //     // render.readAsDataURL(coupon.image);
+    //     // render.onload = function(){
+    //     //   console.log(render.result);
+         
+    //     //   coupon.image = render.result;
+    //       let image = await readAndCompressImage((coupon.image as FileList)[0]);
+    //       coupon.image = await convertToBase64(image);
+    //       console.log(coupon);
+    //       companyService.addCoupon(coupon)
+    //       .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
+    //       .catch(err => errorHandler.showError(err))
+    //     }
+    //     render.onerror = function(error){
+    //     console.log("Error: ", error);  
+
+    //     };
+        
+    //   else{
+    //   companyService.addCoupon(coupon)
+    //     .then( coup => {toast.success("Coupon Adedd!"); navigate("/company/getCompanyCoupons") })
+    //     .catch(err => errorHandler.showError(err))
+    //   }
+    // }
 
 return (
     <div className="AddCoupon">
@@ -153,8 +184,8 @@ return (
                 <MenuItem value={Category.CLOTHING}>Clothing</MenuItem>
                 <MenuItem value={Category.ELECTRONICS}>Electronics</MenuItem>
                 <MenuItem value={Category.JEWELRY}>Jewelry</MenuItem>
-                <MenuItem value={Category.MAKEUP}>MAKEUP</MenuItem>
-                <MenuItem value={Category.CARE}>CARE</MenuItem>
+                <MenuItem value={Category.MAKEUP}>Makeup</MenuItem>
+                <MenuItem value={Category.CARE}>Care</MenuItem>
             </Select><br />
             {formState.errors?.category && (
                   <span className="error">{formState.errors?.category.message}</span>
@@ -200,6 +231,8 @@ return (
     </div>
   );
 }
+
+
 
 export default AddCoupon;
 

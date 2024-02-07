@@ -17,7 +17,6 @@ export const couponSlice = createSlice({
     name: "coupons",
     initialState: initState,
     reducers: {
-        //action to fill the state with all the employees
         fill: (state, action: PayloadAction<Coupon[]>) =>{
             state.value = action.payload;
             //state.lastUpdated = new Date();

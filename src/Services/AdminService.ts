@@ -32,7 +32,6 @@ class AdminService{
     public async addCompany(company: Company){    // redux
         const response = await axios.post<Company>(appConfig.url + "admin/addCompany", company);
         companyStore.dispatch(add(response.data));
-        console.log(response.data);
         return response.data; 
     }
 
